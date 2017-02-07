@@ -67,7 +67,6 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
 
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        super.onLayoutChildren(recycler, state);
         if (getItemCount() == 0) {
             detachAndScrapAttachedViews(recycler);
             offset = 0;
@@ -75,6 +74,7 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
         }
         if (getChildCount() == 0) {
             View scrap = recycler.getViewForPosition(0);
+            removeView(scrap);
             addView(scrap);
             measureChildWithMargins(scrap, 0, 0);
             //获取视图所使用的宽高
@@ -100,7 +100,6 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
 
     @Override
     public void onAdapterChanged(RecyclerView.Adapter oldAdapter, RecyclerView.Adapter newAdapter) {
-        super.onAdapterChanged(oldAdapter, newAdapter);
         removeAllViews();
         offset = 0;
     }
@@ -141,6 +140,17 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
     private void layoutItems(RecyclerView.Recycler recycler, RecyclerView.State state) {
         int layoutDire = isClockWise ? SCROLL_RIGHT : SCROLL_LEFT;
         layoutItems(recycler, state, layoutDire);
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        super.scrollToPosition(position);
+        if (position < 0 || position > getItemCount() - 1) return;
+        float targetRotate = isClockWise ? position * interval : -position * interval;
+        if (targetRotate == offset) return;
+        offset = targetRotate;
+        handleOutOfRange();
+        requestLayout();
     }
 
     private void layoutItems(RecyclerView.Recycler recycler, RecyclerView.State state, int oriention) {
@@ -264,7 +274,8 @@ public abstract class CustomLayoutManager extends RecyclerView.LayoutManager {
     public int getCurrentPosition() {
         return Math.round(Math.abs(offset) / interval);
     }
-    public int getOffsetCenterView(){
-        return (int) ((getCurrentPosition()*(isClockWise?interval:-interval)-offset)*getDistanceRatio());
+
+    public int getOffsetCenterView() {
+        return (int) ((getCurrentPosition() * (isClockWise ? interval : -interval) - offset) * getDistanceRatio());
     }
 }
