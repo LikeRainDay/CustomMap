@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="circleImage">
+        <attr name="shadow_width" format="integer" />
+        <attr name="conner_type" format="float" />
+        <attr name="src" format="reference" />
+        <attr name="type">
+            <enum name="circle" value="0" />
+            <enum name="round" value="1" />
+        </attr>
+
+    </declare-styleable>
+</resources>
